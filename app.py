@@ -591,8 +591,8 @@ app.layout = dbc.Container([
     style={"position": "relative"}),
     html.Br(),
     dbc.Row([
-        dbc.Col(dcc.Graph(figure=fig_profit), width=6),
-        dbc.Col(dcc.Graph(figure=fig_pie), width=6)])], fluid=True)
+        dbc.Col(dcc.Graph(figure=fig_profit), xs = 12, md = 6),
+        dbc.Col(dcc.Graph(figure=fig_pie), xs = 12, md = 6)])], fluid=True)
 
 @app.callback(
     Output("profit-chart", "figure"),
