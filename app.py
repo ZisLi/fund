@@ -498,8 +498,8 @@ fig_profit = px.bar(
     color="color",
     title=f"Earnings (Updated on {date_only})",
     color_discrete_map={
-        "Positive": "green",
-        "Negative": "red"
+        "Positive": "#16c784",
+        "Negative": "#ea3943"
     }
 )
 
