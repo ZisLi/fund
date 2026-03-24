@@ -1,0 +1,651 @@
+import dash
+from dash import dcc, html
+import dash_bootstrap_components as dbc
+from dash.dependencies import Input, Output
+import akshare as ak
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+
+# 持仓基金
+## 1. 易方达中证红利ETF联接A（009052）
+fund_hl = ak.fund_open_fund_info_em(
+    symbol="009051",
+    indicator="单位净值走势"
+)
+
+fund_hl = fund_hl.rename(
+    columns={
+        "净值日期": "date", 
+        "单位净值": "net_value", 
+        "日增长率": "growth_rate(%)"
+        }
+        )
+
+fund_hl["date"] = pd.to_datetime(fund_hl["date"])
+fund_hl = fund_hl[fund_hl["date"] >= "2026-03-06"]
+fund_hl.reset_index(drop = True, inplace = True)
+
+plans_hl = [
+    {"date": "2026-03-06", "amount": 99.40},
+    {"date": "2026-03-10", "amount": 300.00},
+    {"date": "2026-03-16", "amount": 99.16},
+    {"date": "2026-03-17", "amount": 49.04},
+    {"date": "2026-03-18", "amount": 49.31},
+    {"date": "2026-03-19", "amount": 96.81},
+    {"date": "2026-03-20", "amount": 100-32.22},
+    {"date": "2026-03-24", "amount": 20}
+]
+
+plans_hl_df = pd.DataFrame(plans_hl)
+plans_hl_df["date"] = pd.to_datetime(plans_hl_df["date"])
+
+fund_hl["daily_invest"] = 0.0
+
+fund_hl = fund_hl.merge(plans_hl_df, on="date", how="left")
+fund_hl["amount"] = fund_hl["amount"].fillna(0)
+
+fund_hl.loc[fund_hl["date"] >= pd.Timestamp("2026-03-24"), "daily_invest"] = 11
+
+fund_hl["daily_invest"] = fund_hl["amount"] + fund_hl["daily_invest"]
+
+total_shares = 0
+total_invest = 0
+
+fund_hl["shares"] = 0.0
+fund_hl["total_shares"] = 0.0
+fund_hl["asset"] = 0.0
+fund_hl["total_invest"] = 0.0
+
+for i in range(len(fund_hl)):
+    nav = fund_hl.loc[i, "net_value"]
+    invest_today = fund_hl.loc[i, "daily_invest"]
+
+    # 买入 / 卖出份额（关键）
+    shares = invest_today / nav
+
+    total_shares += shares
+    total_invest += invest_today
+
+    fund_hl.loc[i, "shares"] = round(shares, 2)
+    fund_hl.loc[i, "total_shares"] = round(total_shares, 2)
+    fund_hl.loc[i, "asset"] = round(total_shares * nav, 2)
+    fund_hl.loc[i, "total_invest"] = round(total_invest, 2)
+
+fund_hl["profit"] = round(fund_hl["asset"] - fund_hl["total_invest"], 2)
+fund_hl["Return Rate (%)"] = round(fund_hl["profit"] / fund_hl["total_invest"] * 100, 2)
+fund_hl["Fund"] = "易方达中证红利"
+
+fund_hl = fund_hl[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
+
+
+## 2.南方红利低波50ETF联接A（008163）
+fund_hldb = ak.fund_open_fund_info_em(
+    symbol="008163",
+    indicator="单位净值走势"
+)
+fund_hldb = fund_hldb.rename(
+    columns={
+        "净值日期": "date", 
+        "单位净值": "net_value", 
+        "日增长率": "growth_rate(%)"
+        }
+        )
+
+fund_hldb["date"] = pd.to_datetime(fund_hldb["date"])
+fund_hldb = fund_hldb[fund_hldb["date"] >= "2026-03-11"]
+fund_hldb.reset_index(drop = True, inplace = True)
+
+plans_hldb = [
+    {"date": "2026-03-11", "amount": 199.76},
+    {"date": "2026-03-18", "amount": 140.02},
+    {"date": "2026-03-19", "amount": 48.56},
+    {"date": "2026-03-20", "amount": 39.72},
+    {"date": "2026-03-23", "amount": 19.98},
+    {"date": "2026-03-24", "amount": 20},
+]
+
+plans_hldb_df = pd.DataFrame(plans_hldb)
+plans_hldb_df["date"] = pd.to_datetime(plans_hldb_df["date"])
+
+fund_hldb["daily_invest"] = 0.0
+
+fund_hldb = fund_hldb.merge(plans_hldb_df, on="date", how="left")
+fund_hldb["amount"] = fund_hldb["amount"].fillna(0)
+
+fee_rate_hldb = 0.0012
+fund_hldb.loc[fund_hldb["date"] >= pd.to_datetime("2026-03-24"), "daily_invest"] = 12.00 * (1 - fee_rate_hldb)
+
+fund_hldb["daily_invest"] = fund_hldb["amount"] + fund_hldb["daily_invest"]
+
+total_shares = 0
+total_invest = 0
+
+fund_hldb["shares"] = 0.0
+fund_hldb["total_shares"] = 0.0
+fund_hldb["asset"] = 0.0
+fund_hldb["total_invest"] = 0.0
+
+for i in range(len(fund_hldb)):
+    nav = fund_hldb.loc[i, "net_value"]
+    invest_today = fund_hldb.loc[i, "daily_invest"]
+
+    # 买入 / 卖出份额（关键）
+    shares = invest_today / nav
+
+    total_shares += shares
+    total_invest += invest_today
+
+    fund_hldb.loc[i, "shares"] = round(shares, 2)
+    fund_hldb.loc[i, "total_shares"] = round(total_shares, 2)
+    fund_hldb.loc[i, "asset"] = round(total_shares * nav, 2)
+    fund_hldb.loc[i, "total_invest"] = round(total_invest, 2)
+
+fund_hldb["profit"] = round(fund_hldb["asset"] - fund_hldb["total_invest"], 2)
+fund_hldb["Return Rate (%)"] = round(fund_hldb["profit"] / fund_hldb["total_invest"] * 100, 2)
+fund_hldb["Fund"] = "南方红利低波50"
+
+fund_hldb = fund_hldb[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
+
+
+## 3. 广发纳指100ETF联接(QDII)F（021778）
+fund_nasdaq = ak.fund_open_fund_info_em(
+    symbol="021778",
+    indicator="单位净值走势"
+)
+
+fund_nasdaq = fund_nasdaq.rename(
+    columns={
+        "净值日期": "date", 
+        "单位净值": "net_value", 
+        "日增长率": "growth_rate(%)"
+        }
+        )
+
+fund_nasdaq["date"] = pd.to_datetime(fund_nasdaq["date"])
+fund_nasdaq = fund_nasdaq[fund_nasdaq["date"] >= "2026-02-24"]
+fund_nasdaq.reset_index(drop = True, inplace = True)
+
+# 默认 daily invest = 0
+fund_nasdaq["daily_invest"] = 0
+
+# ----------- 定投规则 -----------
+fund_nasdaq.loc[fund_nasdaq["date"] >= "2026-02-24", "daily_invest"] = 20
+fund_nasdaq.loc[fund_nasdaq["date"] >= "2026-03-16", "daily_invest"] = 18
+fund_nasdaq.loc[fund_nasdaq["date"] >= "2026-03-23", "daily_invest"] = 27
+
+# ----------- 手动加仓 -----------
+extra = {
+    "2026-03-03": 200,
+    "2026-03-05": 100,
+    "2026-03-20": 50
+}
+
+for d, amt in extra.items():
+    fund_nasdaq.loc[fund_nasdaq["date"] == pd.to_datetime(d), "daily_invest"] += amt
+
+total_shares = 0
+total_invest = 0
+
+fund_nasdaq["shares"] = 0.0
+fund_nasdaq["total_shares"] = 0.0
+fund_nasdaq["asset"] = 0.0
+fund_nasdaq["total_invest"] = 0.0
+
+for i in range(len(fund_nasdaq)):
+    nav = fund_nasdaq.loc[i, "net_value"]
+    invest_today = fund_nasdaq.loc[i, "daily_invest"]
+
+    # 买入 / 卖出份额（关键）
+    shares = invest_today / nav
+
+    total_shares += shares
+    total_invest += invest_today
+
+    fund_nasdaq.loc[i, "shares"] = round(shares, 2)
+    fund_nasdaq.loc[i, "total_shares"] = round(total_shares, 2)
+    fund_nasdaq.loc[i, "asset"] = round(total_shares * nav, 2)
+    fund_nasdaq.loc[i, "total_invest"] = round(total_invest, 2)
+
+fund_nasdaq["profit"] = round(fund_nasdaq["asset"] - fund_nasdaq["total_invest"], 2)
+fund_nasdaq["Return Rate (%)"] = round(fund_nasdaq["profit"] / fund_nasdaq["total_invest"] * 100, 2)
+fund_nasdaq["Fund"] = "广发纳斯达克100"
+
+fund_nasdaq = fund_nasdaq[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
+
+
+## 4.易方达上证科创50ETF联接C（011609）
+fund_kc = ak.fund_open_fund_info_em(
+    symbol="011609",
+    indicator="单位净值走势"
+)
+fund_kc = fund_kc.rename(
+    columns={
+        "净值日期": "date", 
+        "单位净值": "net_value", 
+        "日增长率": "growth_rate(%)"
+        }
+        )
+
+fund_kc["date"] = pd.to_datetime(fund_kc["date"])
+fund_kc = fund_kc[fund_kc["date"] >= "2026-03-11"]
+fund_kc.reset_index(drop = True, inplace = True)
+
+plans_kc = [
+    {"date": "2026-03-11", "amount": 150.00},
+    {"date": "2026-03-19", "amount": 50.00},
+    {"date": "2026-03-24", "amount": 20}
+]
+
+plans_kc_df = pd.DataFrame(plans_kc)
+plans_kc_df["date"] = pd.to_datetime(plans_kc_df["date"])
+
+fund_kc["daily_invest"] = 0.0
+
+fund_kc = fund_kc.merge(plans_kc_df, on="date", how="left")
+fund_kc["amount"] = fund_kc["amount"].fillna(0)
+
+fee_rate_kc = 0
+fund_kc.loc[fund_kc["date"] >= pd.to_datetime("2026-03-24"), "daily_invest"] = 0 * (1 - fee_rate_kc)
+
+fund_kc["daily_invest"] = fund_kc["amount"] + fund_kc["daily_invest"]
+
+total_shares = 0
+total_invest = 0
+
+fund_kc["shares"] = 0.0
+fund_kc["total_shares"] = 0.0
+fund_kc["asset"] = 0.0
+fund_kc["total_invest"] = 0.0
+
+for i in range(len(fund_kc)):
+    nav = fund_kc.loc[i, "net_value"]
+    invest_today = fund_kc.loc[i, "daily_invest"]
+
+    # 买入 / 卖出份额（关键）
+    shares = invest_today / nav
+
+    total_shares += shares
+    total_invest += invest_today
+
+    fund_kc.loc[i, "shares"] = round(shares, 2)
+    fund_kc.loc[i, "total_shares"] = round(total_shares, 2)
+    fund_kc.loc[i, "asset"] = round(total_shares * nav, 2)
+    fund_kc.loc[i, "total_invest"] = round(total_invest, 2)
+
+fund_kc["profit"] = round(fund_kc["asset"] - fund_kc["total_invest"], 2)
+fund_kc["Return Rate (%)"] = round(fund_kc["profit"] / fund_kc["total_invest"] * 100, 2)
+fund_kc["Fund"] = "易方达科创50"
+
+fund_kc = fund_kc[["Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
+
+## 5.华夏中证电网设备主题ETF联接A（025856）
+fund_dw = ak.fund_open_fund_info_em(
+    symbol="025856",
+    indicator="单位净值走势"
+)
+fund_dw = fund_dw.rename(
+    columns={
+        "净值日期": "date", 
+        "单位净值": "net_value", 
+        "日增长率": "growth_rate(%)"
+        }
+        )
+
+fund_dw["date"] = pd.to_datetime(fund_dw["date"])
+fund_dw = fund_dw[fund_dw["date"] >= "2026-03-12"]
+fund_dw.reset_index(drop = True, inplace = True)
+
+fee_rate_dw = 0.0012
+plans_dw = [
+    {"date": "2026-03-12", "amount": 100.00 * (1 - fee_rate_dw)},
+    {"date": "2026-03-16", "amount": 20.00 * (1 - fee_rate_dw)},
+    {"date": "2026-03-18", "amount": 25.00 * (1 - fee_rate_dw)},
+    {"date": "2026-03-20", "amount": 40.10}
+]
+
+plans_dw_df = pd.DataFrame(plans_dw)
+plans_dw_df["date"] = pd.to_datetime(plans_dw_df["date"])
+
+fund_dw["daily_invest"] = 0.0
+
+fund_dw = fund_dw.merge(plans_dw_df, on="date", how="left")
+fund_dw["amount"] = fund_dw["amount"].fillna(0)
+
+fund_dw.loc[fund_dw["date"] >= pd.to_datetime("2026-03-24"), "daily_invest"] = 0 * (1 - fee_rate_dw)
+
+fund_dw["daily_invest"] = fund_dw["amount"] + fund_dw["daily_invest"]
+
+total_shares = 0
+total_invest = 0
+
+fund_dw["shares"] = 0.0
+fund_dw["total_shares"] = 0.0
+fund_dw["asset"] = 0.0
+fund_dw["total_invest"] = 0.0
+
+for i in range(len(fund_dw)):
+    nav = fund_dw.loc[i, "net_value"]
+    invest_today = fund_dw.loc[i, "daily_invest"]
+
+    # 买入 / 卖出份额（关键）
+    shares = invest_today / nav
+
+    total_shares += shares
+    total_invest += invest_today
+
+    fund_dw.loc[i, "shares"] = round(shares, 2)
+    fund_dw.loc[i, "total_shares"] = round(total_shares, 2)
+    fund_dw.loc[i, "asset"] = round(total_shares * nav, 2)
+    fund_dw.loc[i, "total_invest"] = round(total_invest, 2)
+
+fund_dw["profit"] = round(fund_dw["asset"] - fund_dw["total_invest"], 2)
+fund_dw["Return Rate (%)"] = round(fund_dw["profit"] / fund_dw["total_invest"] * 100, 2)
+fund_dw["Fund"] = "华夏中证电网设备"
+
+fund_dw = fund_dw[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
+
+
+## 6.华夏中证绿色电力ETF联接A（018734）
+fund_ld = ak.fund_open_fund_info_em(
+    symbol="018734",
+    indicator="单位净值走势"
+)
+fund_ld = fund_ld.rename(
+    columns={
+        "净值日期": "date", 
+        "单位净值": "net_value", 
+        "日增长率": "growth_rate(%)"
+        }
+        )
+
+fund_ld["date"] = pd.to_datetime(fund_ld["date"])
+fund_ld = fund_ld[fund_ld["date"] >= "2026-03-10"]
+fund_ld.reset_index(drop = True, inplace = True)
+
+fee_rate_ld = 0.0010
+plans_ld = [
+    {"date": "2026-03-10", "amount": 100.00 * (1 - fee_rate_ld)}
+]
+
+plans_ld_df = pd.DataFrame(plans_ld)
+plans_ld_df["date"] = pd.to_datetime(plans_ld_df["date"])
+
+fund_ld["daily_invest"] = 0.0
+
+fund_ld = fund_ld.merge(plans_ld_df, on="date", how="left")
+fund_ld["amount"] = fund_ld["amount"].fillna(0)
+
+fund_ld.loc[fund_ld["date"] >= pd.to_datetime("2026-03-24"), "daily_invest"] = 0 * (1 - fee_rate_ld)
+
+fund_ld["daily_invest"] = fund_ld["amount"] + fund_ld["daily_invest"]
+
+total_shares = 0
+total_invest = 0
+
+fund_ld["shares"] = 0.0
+fund_ld["total_shares"] = 0.0
+fund_ld["asset"] = 0.0
+fund_ld["total_invest"] = 0.0
+
+for i in range(len(fund_ld)):
+    nav = fund_ld.loc[i, "net_value"]
+    invest_today = fund_ld.loc[i, "daily_invest"]
+
+    # 买入 / 卖出份额（关键）
+    shares = invest_today / nav
+
+    total_shares += shares
+    total_invest += invest_today
+
+    fund_ld.loc[i, "shares"] = round(shares, 2)
+    fund_ld.loc[i, "total_shares"] = round(total_shares, 2)
+    fund_ld.loc[i, "asset"] = round(total_shares * nav, 2)
+    fund_ld.loc[i, "total_invest"] = round(total_invest, 2)
+
+fund_ld["profit"] = round(fund_ld["asset"] - fund_ld["total_invest"], 2)
+fund_ld["Return Rate (%)"] = round(fund_ld["profit"] / fund_ld["total_invest"] * 100, 2)
+fund_ld["Fund"] = "华夏中证绿色电力"
+
+fund_ld = fund_ld[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
+
+funds = pd.concat([fund_hl, fund_hldb, fund_nasdaq, fund_kc, fund_dw, fund_ld], ignore_index = True)
+funds["daily profit"] = funds.groupby("Fund")["profit"].diff()
+
+date = funds[funds["Fund"] == "广发纳斯达克100"]["date"].max()
+date_only = date.date()
+
+total_funds = funds[funds["date"] <= date].copy()
+total_funds["weight"] = (
+    total_funds["asset"] /
+    total_funds.groupby("date")["asset"].transform("sum")
+)
+
+# 加权收益率
+total_funds["weighted_rate"] = (
+    total_funds["Return Rate (%)"] * total_funds["weight"]
+)
+
+# 每天组合收益
+portfolio_rate = (
+    total_funds.groupby("date")["weighted_rate"]
+    .sum()
+    .reset_index()
+)
+portfolio_rate["smooth"] = portfolio_rate["weighted_rate"].rolling(5).mean()
+
+fig_rate = px.line(
+    funds,
+    x="date",
+    y="Return Rate (%)",
+    color="Fund",
+    title=f"Portfolio Total Profit Rate(%) (Updated on {date_only})"
+)
+
+fig_rate.add_trace(
+    go.Scatter(
+        x=portfolio_rate["date"],
+        y=round(portfolio_rate["weighted_rate"],2),
+        mode="lines",
+        name="Portfolio",
+        line=dict(color="black", width=2, dash="dash")
+    )
+)
+
+fig_rate.add_hline(
+    y=0,
+    line=dict(color="red", width=2, dash="dash")
+)
+fig_rate.update_layout(legend_title="Fund")
+
+funds_share = (
+    funds[funds["date"] == date]
+         .groupby("Fund")
+         .tail(1)
+         .reset_index(drop=True)
+)
+
+funds_share["color"] = funds_share["daily profit"].apply(
+    lambda x: "Positive" if x >= 0 else "Negative"
+)
+
+funds_share = funds_share.sort_values("daily profit")
+
+fig_pie = px.pie(
+    funds_share,
+    names="Fund",
+    values="asset",
+    title=f"Asset Allocation (Updated on {date_only})"
+)
+
+fig_pie.update_traces(
+    textinfo="percent"
+)
+
+fig_pie.update_traces(hole=0.3)
+
+profit_hl = funds_share["daily profit"][funds_share["Fund"] == "易方达中证红利"]
+profit_db = funds_share["daily profit"][funds_share["Fund"] == "南方红利低波50"]
+profit_nasdaq = funds_share["daily profit"][funds_share["Fund"] == "广发纳斯达克100	"]
+profit_kc = funds_share["daily profit"][funds_share["Fund"] == "易方达科创50"]
+profit_dw = funds_share["daily profit"][funds_share["Fund"] == "华夏中证电网设备"]
+profit_ld = funds_share["daily profit"][funds_share["Fund"] == "华夏中证绿色电力"]
+
+fig_profit = px.bar(
+    funds_share,
+    x="Fund",
+    y="daily profit",
+    color="color",
+    title=f"Earnings (Updated on {date_only})",
+    color_discrete_map={
+        "Positive": "green",
+        "Negative": "red"
+    }
+)
+
+fig_profit.update_traces(
+    hovertemplate="Fund: %{x}<br>Profit: %{y:.2f}"
+)
+
+fig_profit.update_layout(showlegend=False)
+
+fig_profit.update_layout(xaxis_title=None, yaxis_title=None)
+
+Profit = funds_share["daily profit"].sum()
+
+Invest = funds_share["total_invest"].sum()
+
+Asset = funds_share["asset"].sum()
+
+Return_Rate = round((Asset - Invest)/Invest * 100, 2)
+
+Arrow = "▲" if Asset > Invest else "▼"
+arrow = "▲" if Profit > 0 else "▼"
+
+df_time = (
+    funds.groupby("date")
+    .agg({
+        "asset": "sum",
+        "total_invest": "sum"
+    })
+    .reset_index()
+)
+
+df_time["Returns"] = df_time["asset"] - df_time["total_invest"]
+
+def make_card(title, value, color="black"):
+    return dbc.Card(
+        dbc.CardBody([
+            html.H6(title, className="text-muted"),
+            html.H2(value, style={"color": color,
+                                  "fontWeight": "bold"})
+        ]),
+        style={
+            "textAlign": "center",
+            "borderRadius": "15px",
+            "boxShadow": "0 4px 10px rgba(0,0,0,0.1)"
+        }
+    )
+
+
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
+
+
+# ===== layout =====
+app.layout = dbc.Container([
+
+    html.H2("📊 Portfolio", className="my-4"),
+    html.Br(),
+    # ===== 卡片 =====
+    dbc.Row([
+        dbc.Col(make_card("Total Asset", f"{Arrow}{Asset:.2f}({Return_Rate:.2f}%)",
+                          color = "#ea3943" if Asset > Invest else "#16c784")),
+        dbc.Col(make_card("Total Invest", f"{Invest:.2f}")),
+        dbc.Col(make_card("Today's Return", f"{arrow}{Profit:.2f}",
+                          color = "#ea3943"if Profit > 0 else "#16c784"
+                          ))
+    ]),
+    html.Br(),
+    # ===== 收益图（必须用 id）=====
+    html.Div([
+    # 👇 Dropdown 浮在图上
+    dcc.Dropdown(
+        id="time-filter",
+        options=[
+            {"label": "1W", "value": 7},
+            {"label": "1M", "value": 30},
+            {"label": "3M", "value": 90},
+            {"label": "All", "value": "all"},
+        ],
+        value="all",
+        clearable=False,
+        style={
+            "position": "absolute",
+            "top": "10px",
+            "right": "20px",
+            "width": "120px",
+            "zIndex": 1000,
+            "backgroundColor": "white"
+        }),
+    # 👇 图
+    dcc.Graph(id="profit-chart")], 
+    style={"position": "relative"}),
+    html.Br(),
+    dbc.Row([
+        dbc.Col(dcc.Graph(figure=fig_profit), width=6),
+        dbc.Col(dcc.Graph(figure=fig_pie), width=6)])], fluid=True)
+# ===== callback（关键🔥）=====
+@app.callback(
+    Output("profit-chart", "figure"),
+    Input("time-filter", "value")
+)
+
+def update_chart(days):
+    print("Dropdown value:", days)
+    # ✅ 用 funds（不是 df_time）
+    df_filtered = funds.copy()
+    if days != "all":
+        df_filtered = (
+            df_filtered.sort_values("date")
+            .groupby("Fund")
+            .tail(days)
+        )
+    fig_rate = px.line(
+        df_filtered,
+        x="date",
+        y="Return Rate (%)",
+        color="Fund",
+        title=f"Return Rate(%)"
+    )
+    # ===== 组合收益 =====
+    pr_filtered = portfolio_rate.copy()
+
+    if days != "all":
+        pr_filtered = pr_filtered.tail(days)
+
+    fig_rate.add_trace(
+        go.Scatter(
+            x=pr_filtered["date"],
+            y=round(pr_filtered["weighted_rate"], 2),
+            mode="lines",
+            name="Portfolio",
+            line=dict(color="black", width=2.5)
+        )
+    )
+    fig_rate.add_hline(
+        y=0,
+        line=dict(color="red", width=2, dash="dash")
+    )
+    fig_rate.update_layout(
+    xaxis_title=None,
+    yaxis_title=None)
+    return fig_rate
+
+app.layout.style = {
+    "backgroundColor": "#DAE8FA"
+    }
+
+# ===== run =====
+server = app.server
+if __name__ == "__main__":
+    app.run(debug=True)
