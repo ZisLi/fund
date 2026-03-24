@@ -61,7 +61,7 @@ for i in range(len(fund_hl)):
     nav = fund_hl.loc[i, "net_value"]
     invest_today = fund_hl.loc[i, "daily_invest"]
 
-    # 买入 / 卖出份额（关键）
+    # 买入 / 卖出
     shares = invest_today / nav
 
     total_shares += shares
@@ -130,7 +130,7 @@ for i in range(len(fund_hldb)):
     nav = fund_hldb.loc[i, "net_value"]
     invest_today = fund_hldb.loc[i, "daily_invest"]
 
-    # 买入 / 卖出份额（关键）
+    # 买入 / 卖出
     shares = invest_today / nav
 
     total_shares += shares
@@ -196,7 +196,7 @@ for i in range(len(fund_nasdaq)):
     nav = fund_nasdaq.loc[i, "net_value"]
     invest_today = fund_nasdaq.loc[i, "daily_invest"]
 
-    # 买入 / 卖出份额（关键）
+    # 买入 / 卖出
     shares = invest_today / nav
 
     total_shares += shares
@@ -262,7 +262,7 @@ for i in range(len(fund_kc)):
     nav = fund_kc.loc[i, "net_value"]
     invest_today = fund_kc.loc[i, "daily_invest"]
 
-    # 买入 / 卖出份额（关键）
+    # 买入 / 卖出
     shares = invest_today / nav
 
     total_shares += shares
@@ -328,7 +328,7 @@ for i in range(len(fund_dw)):
     nav = fund_dw.loc[i, "net_value"]
     invest_today = fund_dw.loc[i, "daily_invest"]
 
-    # 买入 / 卖出份额（关键）
+    # 买入 / 卖出
     shares = invest_today / nav
 
     total_shares += shares
@@ -392,7 +392,7 @@ for i in range(len(fund_ld)):
     nav = fund_ld.loc[i, "net_value"]
     invest_today = fund_ld.loc[i, "daily_invest"]
 
-    # 买入 / 卖出份额（关键）
+    # 买入 / 卖出
     shares = invest_today / nav
 
     total_shares += shares
