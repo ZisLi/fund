@@ -556,19 +556,19 @@ app.layout = dbc.Container([
 
     html.H2("📊 Portfolio", className="my-4"),
     html.Br(),
-    # ===== 卡片 =====
+    
     dbc.Row([
         dbc.Col(make_card("Total Asset", f"{Arrow}{Asset:.2f}({Return_Rate:.2f}%)",
-                          color = "#ea3943" if Asset > Invest else "#16c784")),
+                          color = "#16c784" if Asset > Invest else "#ea3943")),
         dbc.Col(make_card("Total Invest", f"{Invest:.2f}")),
         dbc.Col(make_card("Today's Return", f"{arrow}{Profit:.2f}",
-                          color = "#ea3943"if Profit > 0 else "#16c784"
+                          color = "#16c784" if Profit > 0 else "#ea3943"
                           ))
     ]),
     html.Br(),
-    # ===== 收益图（必须用 id）=====
+    
     html.Div([
-    # 👇 Dropdown 浮在图上
+    
     dcc.Dropdown(
         id="time-filter",
         options=[
@@ -587,14 +587,13 @@ app.layout = dbc.Container([
             "zIndex": 1000,
             "backgroundColor": "white"
         }),
-    # 👇 图
     dcc.Graph(id="profit-chart")], 
     style={"position": "relative"}),
     html.Br(),
     dbc.Row([
         dbc.Col(dcc.Graph(figure=fig_profit), width=6),
         dbc.Col(dcc.Graph(figure=fig_pie), width=6)])], fluid=True)
-# ===== callback（关键🔥）=====
+
 @app.callback(
     Output("profit-chart", "figure"),
     Input("time-filter", "value")
@@ -602,7 +601,6 @@ app.layout = dbc.Container([
 
 def update_chart(days):
     print("Dropdown value:", days)
-    # ✅ 用 funds（不是 df_time）
     df_filtered = funds.copy()
     if days != "all":
         df_filtered = (
@@ -617,7 +615,7 @@ def update_chart(days):
         color="Fund",
         title=f"Return Rate(%)"
     )
-    # ===== 组合收益 =====
+    
     pr_filtered = portfolio_rate.copy()
 
     if days != "all":
@@ -645,7 +643,7 @@ app.layout.style = {
     "backgroundColor": "#DAE8FA"
     }
 
-# ===== run =====
+
 server = app.server
 if __name__ == "__main__":
     app.run(debug=True)
