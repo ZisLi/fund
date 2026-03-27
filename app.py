@@ -561,7 +561,7 @@ app.layout = dbc.Container([
         dbc.Col(make_card("Total Asset", f"{Asset:.2f}({Arrow}{Return_Rate:.2f}%)",
                           color = "#16c784" if Asset > Invest else "#ea3943")),
         dbc.Col(make_card("Total Invest", f"{Invest:.2f}")),
-        dbc.Col(make_card("Today's Return", f"{arrow}{Profit:.2f}",
+        dbc.Col(make_card("Return", f"{arrow}{Profit:.2f}",
                           color = "#16c784" if Profit > 0 else "#ea3943"
                           ))
     ]),
