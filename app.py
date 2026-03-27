@@ -46,6 +46,7 @@ fund_hl = fund_hl.merge(plans_hl_df, on="date", how="left")
 fund_hl["amount"] = fund_hl["amount"].fillna(0)
 
 fund_hl.loc[fund_hl["date"] >= pd.Timestamp("2026-03-24"), "daily_invest"] = 11
+fund_hl.loc[fund_hl["date"] >= pd.Timestamp("2026-03-31"), "daily_invest"] = 0
 
 fund_hl["daily_invest"] = fund_hl["amount"] + fund_hl["daily_invest"]
 
@@ -115,6 +116,8 @@ fund_hldb["amount"] = fund_hldb["amount"].fillna(0)
 
 fee_rate_hldb = 0.0012
 fund_hldb.loc[fund_hldb["date"] >= pd.to_datetime("2026-03-24"), "daily_invest"] = 12.00 * (1 - fee_rate_hldb)
+fund_hldb.loc[fund_hldb["date"] >= pd.to_datetime("2026-03-31"), "daily_invest"] = 20.00 * (1 - fee_rate_hldb)
+
 
 fund_hldb["daily_invest"] = fund_hldb["amount"] + fund_hldb["daily_invest"]
 
@@ -173,6 +176,7 @@ fund_nasdaq["daily_invest"] = 0
 fund_nasdaq.loc[fund_nasdaq["date"] >= "2026-02-24", "daily_invest"] = 20
 fund_nasdaq.loc[fund_nasdaq["date"] >= "2026-03-16", "daily_invest"] = 18
 fund_nasdaq.loc[fund_nasdaq["date"] >= "2026-03-23", "daily_invest"] = 27
+fund_nasdaq.loc[fund_nasdaq["date"] >= "2026-03-30", "daily_invest"] = 27
 
 # ----------- 手动加仓 -----------
 extra = {
@@ -409,7 +413,134 @@ fund_ld["Fund"] = "华夏中证绿色电力"
 
 fund_ld = fund_ld[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
 
-funds = pd.concat([fund_hl, fund_hldb, fund_nasdaq, fund_kc, fund_dw, fund_ld], ignore_index = True)
+## 7.广发远见智选混合C（016874）
+fund_yj = ak.fund_open_fund_info_em(
+    symbol="016874",
+    indicator="单位净值走势"
+)
+fund_yj = fund_yj.rename(
+    columns={
+        "净值日期": "date", 
+        "单位净值": "net_value", 
+        "日增长率": "growth_rate(%)"
+        }
+        )
+
+fund_yj["date"] = pd.to_datetime(fund_yj["date"])
+fund_yj = fund_yj[fund_yj["date"] >= "2026-03-30"]
+fund_yj.reset_index(drop = True, inplace = True)
+
+fee_rate_yj = 0.00
+plans_yj = [
+    {"date": "2026-03-10", "amount": 100.00 * (1 - fee_rate_yj)}
+]
+
+plans_yj_df = pd.DataFrame(plans_yj)
+plans_yj_df["date"] = pd.to_datetime(plans_yj_df["date"])
+
+fund_yj["daily_invest"] = 0.0
+
+fund_yj = fund_yj.merge(plans_yj_df, on="date", how="left")
+fund_yj["amount"] = fund_yj["amount"].fillna(0)
+
+fund_yj.loc[fund_yj["date"] >= pd.to_datetime("2026-03-24"), "daily_invest"] = 0 * (1 - fee_rate_yj)
+
+fund_yj["daily_invest"] = fund_yj["amount"] + fund_yj["daily_invest"]
+
+total_shares = 0
+total_invest = 0
+
+fund_yj["shares"] = 0.0
+fund_yj["total_shares"] = 0.0
+fund_yj["asset"] = 0.0
+fund_yj["total_invest"] = 0.0
+
+for i in range(len(fund_yj)):
+    nav = fund_yj.loc[i, "net_value"]
+    invest_today = fund_yj.loc[i, "daily_invest"]
+
+    # 买入 / 卖出
+    shares = invest_today / nav
+
+    total_shares += shares
+    total_invest += invest_today
+
+    fund_yj.loc[i, "shares"] = round(shares, 2)
+    fund_yj.loc[i, "total_shares"] = round(total_shares, 2)
+    fund_yj.loc[i, "asset"] = round(total_shares * nav, 2)
+    fund_yj.loc[i, "total_invest"] = round(total_invest, 2)
+
+fund_yj["profit"] = round(fund_yj["asset"] - fund_yj["total_invest"], 2)
+fund_yj["Return Rate (%)"] = round(fund_yj["profit"] / fund_yj["total_invest"] * 100, 2)
+fund_yj["Fund"] = "广发远见混合"
+
+fund_yj = fund_yj[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
+
+## 8.南方有色金属ETF联接C（004433）
+fund_js = ak.fund_open_fund_info_em(
+    symbol="004433",
+    indicator="单位净值走势"
+)
+fund_js = fund_js.rename(
+    columns={
+        "净值日期": "date", 
+        "单位净值": "net_value", 
+        "日增长率": "growth_rate(%)"
+        }
+        )
+
+fund_js["date"] = pd.to_datetime(fund_js["date"])
+fund_js = fund_js[fund_js["date"] >= "2026-03-30"]
+fund_js.reset_index(drop = True, inplace = True)
+
+fee_rate_js = 0.00
+plans_js = [
+    {"date": "2026-03-30", "amount": 100.00 * (1 - fee_rate_js)}
+]
+
+plans_js_df = pd.DataFrame(plans_js)
+plans_js_df["date"] = pd.to_datetime(plans_js_df["date"])
+
+fund_js["daily_invest"] = 0.0
+
+fund_js = fund_js.merge(plans_js_df, on="date", how="left")
+fund_js["amount"] = fund_js["amount"].fillna(0)
+
+fund_js.loc[fund_js["date"] >= pd.to_datetime("2026-03-24"), "daily_invest"] = 0 * (1 - fee_rate_js)
+
+fund_js["daily_invest"] = fund_js["amount"] + fund_js["daily_invest"]
+
+total_shares = 0
+total_invest = 0
+
+fund_js["shares"] = 0.0
+fund_js["total_shares"] = 0.0
+fund_js["asset"] = 0.0
+fund_js["total_invest"] = 0.0
+
+for i in range(len(fund_js)):
+    nav = fund_js.loc[i, "net_value"]
+    invest_today = fund_js.loc[i, "daily_invest"]
+
+    # 买入 / 卖出
+    shares = invest_today / nav
+
+    total_shares += shares
+    total_invest += invest_today
+
+    fund_js.loc[i, "shares"] = round(shares, 2)
+    fund_js.loc[i, "total_shares"] = round(total_shares, 2)
+    fund_js.loc[i, "asset"] = round(total_shares * nav, 2)
+    fund_js.loc[i, "total_invest"] = round(total_invest, 2)
+
+fund_js["profit"] = round(fund_js["asset"] - fund_js["total_invest"], 2)
+fund_js["Return Rate (%)"] = round(fund_js["profit"] / fund_js["total_invest"] * 100, 2)
+fund_js["Fund"] = "南方有色金属"
+
+fund_js = fund_js[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
+
+
+funds = pd.concat([fund_hl, fund_hldb, fund_nasdaq, fund_kc, fund_dw, fund_ld, fund_yj, fund_js], ignore_index = True)
 funds["daily profit"] = funds.groupby("Fund")["profit"].diff()
 
 date = funds[funds["Fund"] == "广发纳斯达克100"]["date"].max()
@@ -490,6 +621,8 @@ profit_nasdaq = funds_share["daily profit"][funds_share["Fund"] == "广发纳斯
 profit_kc = funds_share["daily profit"][funds_share["Fund"] == "易方达科创50"]
 profit_dw = funds_share["daily profit"][funds_share["Fund"] == "华夏中证电网设备"]
 profit_ld = funds_share["daily profit"][funds_share["Fund"] == "华夏中证绿色电力"]
+profit_yj = funds_share["daily profit"][funds_share["Fund"] == "广发远见混合"]
+profit_js = funds_share["daily profit"][funds_share["Fund"] == "南方有色金属"]
 
 fig_profit = px.bar(
     funds_share,
