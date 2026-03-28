@@ -116,7 +116,7 @@ fund_hldb["amount"] = fund_hldb["amount"].fillna(0)
 
 fee_rate_hldb = 0.0012
 fund_hldb.loc[fund_hldb["date"] >= pd.to_datetime("2026-03-24"), "daily_invest"] = 12.00 * (1 - fee_rate_hldb)
-fund_hldb.loc[fund_hldb["date"] >= pd.to_datetime("2026-03-31"), "daily_invest"] = 20.00 * (1 - fee_rate_hldb)
+fund_hldb.loc[fund_hldb["date"] >= pd.to_datetime("2026-03-31"), "daily_invest"] = 30.00 * (1 - fee_rate_hldb)
 
 
 fund_hldb["daily_invest"] = fund_hldb["amount"] + fund_hldb["daily_invest"]
@@ -176,7 +176,7 @@ fund_nasdaq["daily_invest"] = 0
 fund_nasdaq.loc[fund_nasdaq["date"] >= "2026-02-24", "daily_invest"] = 20
 fund_nasdaq.loc[fund_nasdaq["date"] >= "2026-03-16", "daily_invest"] = 18
 fund_nasdaq.loc[fund_nasdaq["date"] >= "2026-03-23", "daily_invest"] = 27
-fund_nasdaq.loc[fund_nasdaq["date"] >= "2026-03-30", "daily_invest"] = 27
+fund_nasdaq.loc[fund_nasdaq["date"] >= "2026-03-30", "daily_invest"] = 25
 
 # ----------- 手动加仓 -----------
 extra = {
