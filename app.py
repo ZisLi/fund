@@ -360,12 +360,12 @@ fund_yj = fund_yj.rename(
         )
 
 fund_yj["date"] = pd.to_datetime(fund_yj["date"])
-fund_yj = fund_yj[fund_yj["date"] >= "2026-03-30"]
+fund_yj = fund_yj[fund_yj["date"] >= "2026-03-27"]
 fund_yj.reset_index(drop = True, inplace = True)
 
 fee_rate_yj = 0.000
 plans_yj = [
-    {"date": "2026-03-30", "amount": 100.00 * (1 - fee_rate_yj)}
+    {"date": "2026-03-27", "amount": 100.00 * (1 - fee_rate_yj)}
 ]
 
 plans_yj_df = pd.DataFrame(plans_yj)
@@ -424,12 +424,12 @@ fund_js = fund_js.rename(
         )
 
 fund_js["date"] = pd.to_datetime(fund_js["date"])
-fund_js = fund_js[fund_js["date"] >= "2026-03-30"]
+fund_js = fund_js[fund_js["date"] >= "2026-03-27"]
 fund_js.reset_index(drop = True, inplace = True)
 
 fee_rate_js = 0.000
 plans_js = [
-    {"date": "2026-03-30", "amount": 100.00 * (1 - fee_rate_js)}
+    {"date": "2026-03-27", "amount": 100.00 * (1 - fee_rate_js)}
 ]
 
 plans_js_df = pd.DataFrame(plans_js)
