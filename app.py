@@ -430,9 +430,9 @@ fund_yj["date"] = pd.to_datetime(fund_yj["date"])
 fund_yj = fund_yj[fund_yj["date"] >= "2026-03-30"]
 fund_yj.reset_index(drop = True, inplace = True)
 
-fee_rate_yj = 0.00
+fee_rate_yj = 0.000
 plans_yj = [
-    {"date": "2026-03-10", "amount": 100.00 * (1 - fee_rate_yj)}
+    {"date": "2026-03-30", "amount": 100.00 * (1 - fee_rate_yj)}
 ]
 
 plans_yj_df = pd.DataFrame(plans_yj)
@@ -443,7 +443,7 @@ fund_yj["daily_invest"] = 0.0
 fund_yj = fund_yj.merge(plans_yj_df, on="date", how="left")
 fund_yj["amount"] = fund_yj["amount"].fillna(0)
 
-fund_yj.loc[fund_yj["date"] >= pd.to_datetime("2026-03-24"), "daily_invest"] = 0 * (1 - fee_rate_yj)
+# fund_yj.loc[fund_yj["date"] >= pd.to_datetime("2026-03-24"), "daily_invest"] = 0 * (1 - fee_rate_yj)
 
 fund_yj["daily_invest"] = fund_yj["amount"] + fund_yj["daily_invest"]
 
@@ -476,6 +476,7 @@ fund_yj["Fund"] = "广发远见混合"
 
 fund_yj = fund_yj[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
 
+
 ## 8.南方有色金属ETF联接C（004433）
 fund_js = ak.fund_open_fund_info_em(
     symbol="004433",
@@ -493,7 +494,7 @@ fund_js["date"] = pd.to_datetime(fund_js["date"])
 fund_js = fund_js[fund_js["date"] >= "2026-03-30"]
 fund_js.reset_index(drop = True, inplace = True)
 
-fee_rate_js = 0.00
+fee_rate_js = 0.000
 plans_js = [
     {"date": "2026-03-30", "amount": 100.00 * (1 - fee_rate_js)}
 ]
@@ -501,15 +502,13 @@ plans_js = [
 plans_js_df = pd.DataFrame(plans_js)
 plans_js_df["date"] = pd.to_datetime(plans_js_df["date"])
 
-fund_js["daily_invest"] = 0.0
-
 fund_js = fund_js.merge(plans_js_df, on="date", how="left")
-fund_js["amount"] = fund_js["amount"].fillna(0)
 
-fund_js.loc[fund_js["date"] >= pd.to_datetime("2026-03-24"), "daily_invest"] = 0 * (1 - fee_rate_js)
+fund_js["amount"] = fund_js["amount"].fillna(0)
+fund_js["daily_invest"] = 0.0
+# fund_js.loc[fund_js["date"] >= pd.to_datetime("2026-03-24"), "daily_invest"] = 0 * (1 - fee_rate_js)
 
 fund_js["daily_invest"] = fund_js["amount"] + fund_js["daily_invest"]
-
 total_shares = 0
 total_invest = 0
 
@@ -538,6 +537,7 @@ fund_js["Return Rate (%)"] = round(fund_js["profit"] / fund_js["total_invest"] *
 fund_js["Fund"] = "南方有色金属"
 
 fund_js = fund_js[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
+
 
 
 funds = pd.concat([fund_hl, fund_hldb, fund_nasdaq, fund_kc, fund_dw, fund_ld, fund_yj, fund_js], ignore_index = True)
