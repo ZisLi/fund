@@ -116,7 +116,7 @@ fund_hldb["amount"] = fund_hldb["amount"].fillna(0)
 
 fee_rate_hldb = 0.0012
 fund_hldb.loc[fund_hldb["date"] >= pd.to_datetime("2026-03-24"), "daily_invest"] = 12.00 * (1 - fee_rate_hldb)
-fund_hldb.loc[fund_hldb["date"] >= pd.to_datetime("2026-03-31"), "daily_invest"] = 30.00 * (1 - fee_rate_hldb)
+fund_hldb.loc[fund_hldb["date"] >= pd.to_datetime("2026-03-31"), "daily_invest"] = 20.00 * (1 - fee_rate_hldb)
 
 
 fund_hldb["daily_invest"] = fund_hldb["amount"] + fund_hldb["daily_invest"]
@@ -151,73 +151,6 @@ fund_hldb["Fund"] = "南方红利低波50"
 fund_hldb = fund_hldb[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
 
 
-## 3. 广发纳指100ETF联接(QDII)F（021778）
-fund_nasdaq = ak.fund_open_fund_info_em(
-    symbol="021778",
-    indicator="单位净值走势"
-)
-
-fund_nasdaq = fund_nasdaq.rename(
-    columns={
-        "净值日期": "date", 
-        "单位净值": "net_value", 
-        "日增长率": "growth_rate(%)"
-        }
-        )
-
-fund_nasdaq["date"] = pd.to_datetime(fund_nasdaq["date"])
-fund_nasdaq = fund_nasdaq[fund_nasdaq["date"] >= "2026-02-24"]
-fund_nasdaq.reset_index(drop = True, inplace = True)
-
-# 默认 daily invest = 0
-fund_nasdaq["daily_invest"] = 0
-
-# ----------- 定投规则 -----------
-fund_nasdaq.loc[fund_nasdaq["date"] >= "2026-02-24", "daily_invest"] = 20
-fund_nasdaq.loc[fund_nasdaq["date"] >= "2026-03-16", "daily_invest"] = 18
-fund_nasdaq.loc[fund_nasdaq["date"] >= "2026-03-23", "daily_invest"] = 27
-fund_nasdaq.loc[fund_nasdaq["date"] >= "2026-03-30", "daily_invest"] = 25
-
-# ----------- 手动加仓 -----------
-extra = {
-    "2026-03-03": 200,
-    "2026-03-05": 100,
-    "2026-03-20": 50
-}
-
-for d, amt in extra.items():
-    fund_nasdaq.loc[fund_nasdaq["date"] == pd.to_datetime(d), "daily_invest"] += amt
-
-total_shares = 0
-total_invest = 0
-
-fund_nasdaq["shares"] = 0.0
-fund_nasdaq["total_shares"] = 0.0
-fund_nasdaq["asset"] = 0.0
-fund_nasdaq["total_invest"] = 0.0
-
-for i in range(len(fund_nasdaq)):
-    nav = fund_nasdaq.loc[i, "net_value"]
-    invest_today = fund_nasdaq.loc[i, "daily_invest"]
-
-    # 买入 / 卖出
-    shares = invest_today / nav
-
-    total_shares += shares
-    total_invest += invest_today
-
-    fund_nasdaq.loc[i, "shares"] = round(shares, 2)
-    fund_nasdaq.loc[i, "total_shares"] = round(total_shares, 2)
-    fund_nasdaq.loc[i, "asset"] = round(total_shares * nav, 2)
-    fund_nasdaq.loc[i, "total_invest"] = round(total_invest, 2)
-
-fund_nasdaq["profit"] = round(fund_nasdaq["asset"] - fund_nasdaq["total_invest"], 2)
-fund_nasdaq["Return Rate (%)"] = round(fund_nasdaq["profit"] / fund_nasdaq["total_invest"] * 100, 2)
-fund_nasdaq["Fund"] = "广发纳斯达克100"
-
-fund_nasdaq = fund_nasdaq[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
-
-
 ## 4.易方达上证科创50ETF联接C（011609）
 fund_kc = ak.fund_open_fund_info_em(
     symbol="011609",
@@ -250,7 +183,7 @@ fund_kc = fund_kc.merge(plans_kc_df, on="date", how="left")
 fund_kc["amount"] = fund_kc["amount"].fillna(0)
 
 fee_rate_kc = 0
-fund_kc.loc[fund_kc["date"] >= pd.to_datetime("2026-03-24"), "daily_invest"] = 0 * (1 - fee_rate_kc)
+# fund_kc.loc[fund_kc["date"] >= pd.to_datetime("2026-03-24"), "daily_invest"] = 0 * (1 - fee_rate_kc)
 
 fund_kc["daily_invest"] = fund_kc["amount"] + fund_kc["daily_invest"]
 
@@ -316,10 +249,10 @@ fund_dw["daily_invest"] = 0.0
 fund_dw = fund_dw.merge(plans_dw_df, on="date", how="left")
 fund_dw["amount"] = fund_dw["amount"].fillna(0)
 
-fund_dw.loc[fund_dw["date"] >= pd.to_datetime("2026-03-24"), "daily_invest"] = 0 * (1 - fee_rate_dw)
+# fund_dw.loc[fund_dw["date"] >= pd.to_datetime("2026-03-24"), "daily_invest"] = 0 * (1 - fee_rate_dw)
 
 fund_dw["daily_invest"] = fund_dw["amount"] + fund_dw["daily_invest"]
-
+fund_dw.head()
 total_shares = 0
 total_invest = 0
 
@@ -380,7 +313,7 @@ fund_ld["daily_invest"] = 0.0
 fund_ld = fund_ld.merge(plans_ld_df, on="date", how="left")
 fund_ld["amount"] = fund_ld["amount"].fillna(0)
 
-fund_ld.loc[fund_ld["date"] >= pd.to_datetime("2026-03-24"), "daily_invest"] = 0 * (1 - fee_rate_ld)
+# fund_ld.loc[fund_ld["date"] >= pd.to_datetime("2026-03-24"), "daily_invest"] = 0 * (1 - fee_rate_ld)
 
 fund_ld["daily_invest"] = fund_ld["amount"] + fund_ld["daily_invest"]
 
@@ -538,12 +471,10 @@ fund_js["Fund"] = "南方有色金属"
 
 fund_js = fund_js[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
 
-
-
-funds = pd.concat([fund_hl, fund_hldb, fund_nasdaq, fund_kc, fund_dw, fund_ld, fund_yj, fund_js], ignore_index = True)
+funds = pd.concat([fund_hl, fund_hldb, fund_kc, fund_dw, fund_ld, fund_yj, fund_js], ignore_index = True)
 funds["daily profit"] = funds.groupby("Fund")["profit"].diff()
 
-date = funds[funds["Fund"] == "广发纳斯达克100"]["date"].max()
+date = funds["date"].max()
 date_only = date.date()
 
 total_funds = funds[funds["date"] <= date].copy()
@@ -588,7 +519,7 @@ fig_rate.add_hline(
     line=dict(color="red", width=2, dash="dash")
 )
 fig_rate.update_layout(legend_title="Fund")
-
+fig_rate.show()
 funds_share = (
     funds[funds["date"] == date]
          .groupby("Fund")
@@ -615,9 +546,9 @@ fig_pie.update_traces(
 
 fig_pie.update_traces(hole=0.3)
 
+
 profit_hl = funds_share["daily profit"][funds_share["Fund"] == "易方达中证红利"]
 profit_db = funds_share["daily profit"][funds_share["Fund"] == "南方红利低波50"]
-profit_nasdaq = funds_share["daily profit"][funds_share["Fund"] == "广发纳斯达克100	"]
 profit_kc = funds_share["daily profit"][funds_share["Fund"] == "易方达科创50"]
 profit_dw = funds_share["daily profit"][funds_share["Fund"] == "华夏中证电网设备"]
 profit_ld = funds_share["daily profit"][funds_share["Fund"] == "华夏中证绿色电力"]
