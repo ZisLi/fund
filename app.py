@@ -171,7 +171,8 @@ fund_kc.reset_index(drop = True, inplace = True)
 plans_kc = [
     {"date": "2026-03-11", "amount": 150.00},
     {"date": "2026-03-19", "amount": 50.00},
-    {"date": "2026-03-24", "amount": 20}
+    {"date": "2026-03-24", "amount": 20},
+    {"date": "2026-03-31", "amount": 50}
 ]
 
 plans_kc_df = pd.DataFrame(plans_kc)
@@ -302,7 +303,8 @@ fund_ld.reset_index(drop = True, inplace = True)
 
 fee_rate_ld = 0.0010
 plans_ld = [
-    {"date": "2026-03-10", "amount": 100.00 * (1 - fee_rate_ld)}
+    {"date": "2026-03-10", "amount": 100.00 * (1 - fee_rate_ld)},
+    {"date": "2026-03-31", "amount": 30 * (1 - fee_rate_ld)},
 ]
 
 plans_ld_df = pd.DataFrame(plans_ld)
