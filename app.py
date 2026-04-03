@@ -33,9 +33,9 @@ plans_hl = [
     {"date": "2026-03-17", "amount": 49.04},
     {"date": "2026-03-18", "amount": 49.31},
     {"date": "2026-03-19", "amount": 96.81},
-    {"date": "2026-03-20", "amount": 100-32.22},
-    {"date": "2026-03-23", "amount": 20},
-    {"date": "2026-04-03", "amount": 110.00}
+    {"date": "2026-03-20", "amount": 100.00-32.22},
+    {"date": "2026-03-23", "amount": 20.00},
+    {"date": "2026-04-03", "amount": 110.00-64.07}
 ]
 
 plans_hl_df = pd.DataFrame(plans_hl)
@@ -100,9 +100,9 @@ fund_hldb.reset_index(drop = True, inplace = True)
 
 plans_hldb = [
     {"date": "2026-03-11", "amount": 199.76},
-    {"date": "2026-03-18", "amount": 140.02},
+    {"date": "2026-03-18", "amount": 139.96},
     {"date": "2026-03-19", "amount": 48.56},
-    {"date": "2026-03-20", "amount": 39.72},
+    {"date": "2026-03-20", "amount": 59.7},
     {"date": "2026-03-23", "amount": 19.98},
     {"date": "2026-04-03", "amount": 500.00}
 ]
@@ -151,8 +151,7 @@ fund_hldb["Fund"] = "南方红利低波50"
 
 fund_hldb = fund_hldb[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
 
-
-## 4.易方达上证科创50ETF联接C（011609）
+## 3.易方达上证科创50ETF联接C（011609）
 fund_kc = ak.fund_open_fund_info_em(
     symbol="011609",
     indicator="单位净值走势"
@@ -172,8 +171,8 @@ fund_kc.reset_index(drop = True, inplace = True)
 plans_kc = [
     {"date": "2026-03-11", "amount": 150.00},
     {"date": "2026-03-19", "amount": 50.00},
-    {"date": "2026-03-23", "amount": 20},
-    {"date": "2026-03-31", "amount": 50}
+    {"date": "2026-03-23", "amount": 20.00},
+    {"date": "2026-03-31", "amount": 50.00}
 ]
 
 plans_kc_df = pd.DataFrame(plans_kc)
@@ -218,7 +217,7 @@ fund_kc["Fund"] = "易方达科创50"
 
 fund_kc = fund_kc[["Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
 
-## 5.华夏中证电网设备主题ETF联接A（025856）
+## 4.华夏中证电网设备主题ETF联接A（025856）
 fund_dw = ak.fund_open_fund_info_em(
     symbol="025856",
     indicator="单位净值走势"
@@ -286,7 +285,7 @@ fund_dw["Fund"] = "华夏中证电网设备"
 fund_dw = fund_dw[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
 
 
-## 6.华夏中证绿色电力ETF联接A（018734）
+## 5.华夏中证绿色电力ETF联接A（018734）
 fund_ld = ak.fund_open_fund_info_em(
     symbol="018734",
     indicator="单位净值走势"
@@ -306,7 +305,7 @@ fund_ld.reset_index(drop = True, inplace = True)
 fee_rate_ld = 0.0010
 plans_ld = [
     {"date": "2026-03-10", "amount": 100.00 * (1 - fee_rate_ld)},
-    {"date": "2026-03-31", "amount": 35 * (1 - fee_rate_ld)},
+    {"date": "2026-03-31", "amount": 35.00 * (1 - fee_rate_ld)},
     {"date": "2026-04-03", "amount": (150.00 * (1 - fee_rate_ld)) - 88.11}
 ]
 
@@ -351,7 +350,7 @@ fund_ld["Fund"] = "华夏中证绿色电力"
 
 fund_ld = fund_ld[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
 
-## 7.广发远见智选混合C（016874）
+## 6.广发远见智选混合C（016874）
 fund_yj = ak.fund_open_fund_info_em(
     symbol="016874",
     indicator="单位净值走势"
@@ -415,7 +414,7 @@ fund_yj["Fund"] = "广发远见混合"
 fund_yj = fund_yj[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
 
 
-## 8.南方有色金属ETF联接C（004433）
+## 7.南方有色金属ETF联接C（004433）
 fund_js = ak.fund_open_fund_info_em(
     symbol="004433",
     indicator="单位净值走势"
@@ -476,7 +475,7 @@ fund_js["Fund"] = "南方有色金属"
 
 fund_js = fund_js[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
 
-## 9.华泰柏瑞质量成长混合C（011452）
+## 8.华泰柏瑞质量成长混合C（011452）
 fund_cpo = ak.fund_open_fund_info_em(
     symbol="011452",
     indicator="单位净值走势"
