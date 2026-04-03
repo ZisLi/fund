@@ -307,7 +307,7 @@ fee_rate_ld = 0.0010
 plans_ld = [
     {"date": "2026-03-10", "amount": 100.00 * (1 - fee_rate_ld)},
     {"date": "2026-03-31", "amount": 35 * (1 - fee_rate_ld)},
-    {"date": "2026-04-03", "amount": 150.00 * (1 - fee_rate_ld)}
+    {"date": "2026-04-03", "amount": (150.00 * (1 - fee_rate_ld)) - 88.11}
 ]
 
 plans_ld_df = pd.DataFrame(plans_ld)
