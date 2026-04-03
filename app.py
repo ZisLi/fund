@@ -34,7 +34,8 @@ plans_hl = [
     {"date": "2026-03-18", "amount": 49.31},
     {"date": "2026-03-19", "amount": 96.81},
     {"date": "2026-03-20", "amount": 100-32.22},
-    {"date": "2026-03-24", "amount": 20}
+    {"date": "2026-03-23", "amount": 20},
+    {"date": "2026-04-03", "amount": 110.00}
 ]
 
 plans_hl_df = pd.DataFrame(plans_hl)
@@ -103,7 +104,7 @@ plans_hldb = [
     {"date": "2026-03-19", "amount": 48.56},
     {"date": "2026-03-20", "amount": 39.72},
     {"date": "2026-03-23", "amount": 19.98},
-    {"date": "2026-03-24", "amount": 20},
+    {"date": "2026-04-03", "amount": 500.00}
 ]
 
 plans_hldb_df = pd.DataFrame(plans_hldb)
@@ -115,9 +116,9 @@ fund_hldb = fund_hldb.merge(plans_hldb_df, on="date", how="left")
 fund_hldb["amount"] = fund_hldb["amount"].fillna(0)
 
 fee_rate_hldb = 0.0012
-fund_hldb.loc[fund_hldb["date"] >= pd.to_datetime("2026-03-24"), "daily_invest"] = 12.00 * (1 - fee_rate_hldb)
-fund_hldb.loc[fund_hldb["date"] >= pd.to_datetime("2026-03-31"), "daily_invest"] = 20.00 * (1 - fee_rate_hldb)
-
+fund_hldb.loc[fund_hldb["date"] >= pd.to_datetime("2026-03-23"), "daily_invest"] = 12.00 * (1 - fee_rate_hldb)
+fund_hldb.loc[fund_hldb["date"] >= pd.to_datetime("2026-03-31"), "daily_invest"] = 30.00 * (1 - fee_rate_hldb)
+fund_hldb.loc[fund_hldb["date"] >= pd.to_datetime("2026-04-07"), "daily_invest"] = 30.00
 
 fund_hldb["daily_invest"] = fund_hldb["amount"] + fund_hldb["daily_invest"]
 
@@ -171,7 +172,7 @@ fund_kc.reset_index(drop = True, inplace = True)
 plans_kc = [
     {"date": "2026-03-11", "amount": 150.00},
     {"date": "2026-03-19", "amount": 50.00},
-    {"date": "2026-03-24", "amount": 20},
+    {"date": "2026-03-23", "amount": 20},
     {"date": "2026-03-31", "amount": 50}
 ]
 
@@ -239,7 +240,8 @@ plans_dw = [
     {"date": "2026-03-12", "amount": 100.00 * (1 - fee_rate_dw)},
     {"date": "2026-03-16", "amount": 20.00 * (1 - fee_rate_dw)},
     {"date": "2026-03-18", "amount": 25.00 * (1 - fee_rate_dw)},
-    {"date": "2026-03-20", "amount": 40.10}
+    {"date": "2026-03-20", "amount": 40.10},
+    {"date": "2026-04-02", "amount": (70.00 * (1 - fee_rate_dw)) - 56.97}
 ]
 
 plans_dw_df = pd.DataFrame(plans_dw)
@@ -304,7 +306,8 @@ fund_ld.reset_index(drop = True, inplace = True)
 fee_rate_ld = 0.0010
 plans_ld = [
     {"date": "2026-03-10", "amount": 100.00 * (1 - fee_rate_ld)},
-    {"date": "2026-03-31", "amount": 30 * (1 - fee_rate_ld)},
+    {"date": "2026-03-31", "amount": 35 * (1 - fee_rate_ld)},
+    {"date": "2026-04-03", "amount": 150.00 * (1 - fee_rate_ld)}
 ]
 
 plans_ld_df = pd.DataFrame(plans_ld)
@@ -473,7 +476,69 @@ fund_js["Fund"] = "南方有色金属"
 
 fund_js = fund_js[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
 
-funds = pd.concat([fund_hl, fund_hldb, fund_kc, fund_dw, fund_ld, fund_yj, fund_js], ignore_index = True)
+## 9.华泰柏瑞质量成长混合C（011452）
+fund_cpo = ak.fund_open_fund_info_em(
+    symbol="011452",
+    indicator="单位净值走势"
+)
+fund_cpo = fund_cpo.rename(
+    columns={
+        "净值日期": "date", 
+        "单位净值": "net_value", 
+        "日增长率": "growth_rate(%)"
+        }
+        )
+
+fund_cpo["date"] = pd.to_datetime(fund_cpo["date"])
+fund_cpo = fund_cpo[fund_cpo["date"] >= "2026-04-02"]
+fund_cpo.reset_index(drop = True, inplace = True)
+
+fee_rate_cpo = 0.000
+plans_cpo = [
+    {"date": "2026-04-02", "amount": 100.00 * (1 - fee_rate_cpo)}
+]
+
+plans_cpo_df = pd.DataFrame(plans_cpo)
+plans_cpo_df["date"] = pd.to_datetime(plans_cpo_df["date"])
+
+fund_cpo = fund_cpo.merge(plans_cpo_df, on="date", how="left")
+
+fund_cpo["amount"] = fund_cpo["amount"].fillna(0)
+fund_cpo["daily_invest"] = 0.0
+# fund_cpo.loc[fund_cpo["date"] >= pd.to_datetime("2026-04-02"), "daily_invest"] = 0 * (1 - fee_rate_cpo)
+
+fund_cpo["daily_invest"] = fund_cpo["amount"] + fund_cpo["daily_invest"]
+total_shares = 0
+total_invest = 0
+
+fund_cpo["shares"] = 0.0
+fund_cpo["total_shares"] = 0.0
+fund_cpo["asset"] = 0.0
+fund_cpo["total_invest"] = 0.0
+
+for i in range(len(fund_cpo)):
+    nav = fund_cpo.loc[i, "net_value"]
+    invest_today = fund_cpo.loc[i, "daily_invest"]
+
+    # 买入 / 卖出
+    shares = invest_today / nav
+
+    total_shares += shares
+    total_invest += invest_today
+
+    fund_cpo.loc[i, "shares"] = round(shares, 2)
+    fund_cpo.loc[i, "total_shares"] = round(total_shares, 2)
+    fund_cpo.loc[i, "asset"] = round(total_shares * nav, 2)
+    fund_cpo.loc[i, "total_invest"] = round(total_invest, 2)
+
+fund_cpo["profit"] = round(fund_cpo["asset"] - fund_cpo["total_invest"], 2)
+fund_cpo["Return Rate (%)"] = round(fund_cpo["profit"] / fund_cpo["total_invest"] * 100, 2)
+fund_cpo["Fund"] = "华泰成长混合"
+
+fund_cpo = fund_cpo[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
+
+
+funds = pd.concat([fund_hl, fund_hldb, fund_kc, fund_dw, fund_ld, fund_yj, fund_js, fund_cpo], ignore_index = True)
 funds["daily profit"] = funds.groupby("Fund")["profit"].diff()
 
 date = funds["date"].max()
@@ -498,6 +563,7 @@ portfolio_rate = (
 )
 portfolio_rate["smooth"] = portfolio_rate["weighted_rate"].rolling(5).mean()
 
+
 fig_rate = px.line(
     funds,
     x="date",
@@ -521,7 +587,7 @@ fig_rate.add_hline(
     line=dict(color="red", width=2, dash="dash")
 )
 fig_rate.update_layout(legend_title="Fund")
-fig_rate.show()
+
 funds_share = (
     funds[funds["date"] == date]
          .groupby("Fund")
@@ -534,6 +600,7 @@ funds_share["color"] = funds_share["daily profit"].apply(
 )
 
 funds_share = funds_share.sort_values("daily profit")
+funds_share.tail(60)
 
 fig_pie = px.pie(
     funds_share,
@@ -556,6 +623,7 @@ profit_dw = funds_share["daily profit"][funds_share["Fund"] == "华夏中证电�
 profit_ld = funds_share["daily profit"][funds_share["Fund"] == "华夏中证绿色电力"]
 profit_yj = funds_share["daily profit"][funds_share["Fund"] == "广发远见混合"]
 profit_js = funds_share["daily profit"][funds_share["Fund"] == "南方有色金属"]
+profit_cpo = funds_share["daily profit"][funds_share["Fund"] == "华泰成长混合"]
 
 fig_profit = px.bar(
     funds_share,
@@ -597,7 +665,9 @@ df_time = (
     .reset_index()
 )
 
+
 df_time["Returns"] = df_time["asset"] - df_time["total_invest"]
+
 
 def make_card(title, value, color="black"):
     return dbc.Card(
@@ -666,8 +736,8 @@ app.layout = dbc.Container([
 )
 
 def update_chart(days):
-    print("Dropdown value:", days)
-    df_filtered = funds.copy()
+    
+    df_filtered = funds[funds["date"] >= "2026-03-09"].copy()
     if days != "all":
         df_filtered = (
             df_filtered.sort_values("date")
@@ -682,7 +752,7 @@ def update_chart(days):
         title=f"Return Rate(%)"
     )
     
-    pr_filtered = portfolio_rate.copy()
+    pr_filtered = portfolio_rate[portfolio_rate["date"] >= "2026-03-09"].copy()
 
     if days != "all":
         pr_filtered = pr_filtered.tail(days)
