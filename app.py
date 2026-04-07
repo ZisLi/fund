@@ -240,6 +240,7 @@ plans_dw = [
     {"date": "2026-03-18", "amount": 25.00 * (1 - fee_rate_dw)},
     {"date": "2026-03-20", "amount": 40.10},
     {"date": "2026-04-02", "amount": (70.00 * (1 - fee_rate_dw)) - 56.97}
+    {"date": "2026-04-07", "amount": 10.00 * (1 - fee_rate_dw)},
 ]
 
 plans_dw_df = pd.DataFrame(plans_dw)
@@ -305,7 +306,8 @@ fee_rate_ld = 0.0010
 plans_ld = [
     {"date": "2026-03-10", "amount": 100.00 * (1 - fee_rate_ld)},
     {"date": "2026-03-31", "amount": 35.00 * (1 - fee_rate_ld)},
-    {"date": "2026-04-03", "amount": (150.00 * (1 - fee_rate_ld)) - 88.11}
+    {"date": "2026-04-03", "amount": (150.00 * (1 - fee_rate_ld)) - 88.11},
+    {"date": "2026-04-07", "amount": 100.00 * (1 - fee_rate_ld)}
 ]
 
 plans_ld_df = pd.DataFrame(plans_ld)
