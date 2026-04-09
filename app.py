@@ -35,7 +35,8 @@ plans_hl = [
     {"date": "2026-03-19", "amount": 96.81},
     {"date": "2026-03-20", "amount": 100.00-32.41},
     {"date": "2026-03-23", "amount": 20.00},
-    {"date": "2026-04-03", "amount": 110.00-64.07}
+    {"date": "2026-04-03", "amount": 110.00-64.07},
+    {"date": "2026-04-09", "amount": 39.74}
 ]
 
 plans_hl_df = pd.DataFrame(plans_hl)
@@ -103,7 +104,8 @@ plans_hldb = [
     {"date": "2026-03-19", "amount": 48.56},
     {"date": "2026-03-20", "amount": 59.7},
     {"date": "2026-03-23", "amount": 19.98},
-    {"date": "2026-04-03", "amount": 500.00}
+    {"date": "2026-04-03", "amount": 500.00},
+    {"date": "2026-04-09", "amount": 300.00}
 ]
 
 plans_hldb_df = pd.DataFrame(plans_hldb)
