@@ -373,7 +373,7 @@ fund_yj.reset_index(drop = True, inplace = True)
 
 fee_rate_yj = 0.000
 plans_yj = [
-    {"date": "2026-03-27", "amount": 100.00 * (1 - fee_rate_yj)}，
+    {"date": "2026-03-27", "amount": 100.00 * (1 - fee_rate_yj)},
     {"date": "2026-04-10", "amount": 100.00 * (1 - fee_rate_yj)}
 ]
 
