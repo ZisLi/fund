@@ -120,6 +120,7 @@ fee_rate_hldb = 0.0012
 fund_hldb.loc[fund_hldb["date"] >= pd.to_datetime("2026-03-23"), "daily_invest"] = 12.00 * (1 - fee_rate_hldb)
 fund_hldb.loc[fund_hldb["date"] >= pd.to_datetime("2026-03-31"), "daily_invest"] = 30.00 * (1 - fee_rate_hldb)
 fund_hldb.loc[fund_hldb["date"] >= pd.to_datetime("2026-04-07"), "daily_invest"] = 30.00
+fund_hldb.loc[fund_hldb["date"] >= pd.to_datetime("2026-04-13"), "daily_invest"] = 10.00
 
 fund_hldb["daily_invest"] = fund_hldb["amount"] + fund_hldb["daily_invest"]
 
@@ -372,7 +373,8 @@ fund_yj.reset_index(drop = True, inplace = True)
 
 fee_rate_yj = 0.000
 plans_yj = [
-    {"date": "2026-03-27", "amount": 100.00 * (1 - fee_rate_yj)}
+    {"date": "2026-03-27", "amount": 100.00 * (1 - fee_rate_yj)}，
+    {"date": "2026-04-10", "amount": 100.00 * (1 - fee_rate_yj)}
 ]
 
 plans_yj_df = pd.DataFrame(plans_yj)
@@ -497,7 +499,8 @@ fund_cpo.reset_index(drop = True, inplace = True)
 
 fee_rate_cpo = 0.000
 plans_cpo = [
-    {"date": "2026-04-02", "amount": 100.00 * (1 - fee_rate_cpo)}
+    {"date": "2026-04-02", "amount": 100.00 * (1 - fee_rate_cpo)}，
+    {"date": "2026-04-10", "amount": 50.00 * (1 - fee_rate_cpo)}
 ]
 
 plans_cpo_df = pd.DataFrame(plans_cpo)
