@@ -47,8 +47,9 @@ fund_hl["daily_invest"] = 0.0
 fund_hl = fund_hl.merge(plans_hl_df, on="date", how="left")
 fund_hl["amount"] = fund_hl["amount"].fillna(0)
 
-fund_hl.loc[fund_hl["date"] >= pd.Timestamp("2026-03-24"), "daily_invest"] = 11
-fund_hl.loc[fund_hl["date"] >= pd.Timestamp("2026-03-31"), "daily_invest"] = 0
+fund_hl.loc[fund_hl["date"] >= pd.Timestamp("2026-03-24"), "daily_invest"] = 11.00
+fund_hl.loc[fund_hl["date"] >= pd.Timestamp("2026-03-31"), "daily_invest"] = 0.00
+fund_hl.loc[fund_hl["date"] >= pd.Timestamp("2026-04-13"), "daily_invest"] = 0.00
 
 fund_hl["daily_invest"] = fund_hl["amount"] + fund_hl["daily_invest"]
 
