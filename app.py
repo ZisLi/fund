@@ -499,7 +499,7 @@ fund_cpo.reset_index(drop = True, inplace = True)
 
 fee_rate_cpo = 0.000
 plans_cpo = [
-    {"date": "2026-04-02", "amount": 100.00 * (1 - fee_rate_cpo)}，
+    {"date": "2026-04-02", "amount": 100.00 * (1 - fee_rate_cpo)},
     {"date": "2026-04-10", "amount": 50.00 * (1 - fee_rate_cpo)}
 ]
 
