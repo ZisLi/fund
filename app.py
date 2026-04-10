@@ -81,78 +81,6 @@ fund_hl["Fund"] = "易方达中证红利"
 
 fund_hl = fund_hl[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
 
-## 1.南方红利低波50ETF联接A（008163）
-fund_hldb = ak.fund_open_fund_info_em(
-    symbol="008163",
-    indicator="单位净值走势"
-)
-fund_hldb = fund_hldb.rename(
-    columns={
-        "净值日期": "date", 
-        "单位净值": "net_value", 
-        "日增长率": "growth_rate(%)"
-        }
-        )
-
-fund_hldb["date"] = pd.to_datetime(fund_hldb["date"])
-fund_hldb = fund_hldb[fund_hldb["date"] >= "2026-03-11"]
-fund_hldb.reset_index(drop = True, inplace = True)
-
-plans_hldb = [
-    {"date": "2026-03-11", "amount": 199.76},
-    {"date": "2026-03-18", "amount": 139.96},
-    {"date": "2026-03-19", "amount": 48.56},
-    {"date": "2026-03-20", "amount": 59.7},
-    {"date": "2026-03-23", "amount": 19.98},
-    {"date": "2026-04-03", "amount": 500.00},
-    {"date": "2026-04-09", "amount": 300.00}
-]
-
-plans_hldb_df = pd.DataFrame(plans_hldb)
-plans_hldb_df["date"] = pd.to_datetime(plans_hldb_df["date"])
-
-fund_hldb["daily_invest"] = 0.0
-
-fund_hldb = fund_hldb.merge(plans_hldb_df, on="date", how="left")
-fund_hldb["amount"] = fund_hldb["amount"].fillna(0)
-
-fee_rate_hldb = 0.0012
-fund_hldb.loc[fund_hldb["date"] >= pd.to_datetime("2026-03-23"), "daily_invest"] = 12.00 * (1 - fee_rate_hldb)
-fund_hldb.loc[fund_hldb["date"] >= pd.to_datetime("2026-03-31"), "daily_invest"] = 30.00 * (1 - fee_rate_hldb)
-fund_hldb.loc[fund_hldb["date"] >= pd.to_datetime("2026-04-07"), "daily_invest"] = 30.00
-fund_hldb.loc[fund_hldb["date"] >= pd.to_datetime("2026-04-14"), "daily_invest"] = 10.00
-
-fund_hldb["daily_invest"] = fund_hldb["amount"] + fund_hldb["daily_invest"]
-
-total_shares = 0
-total_invest = 0
-
-fund_hldb["shares"] = 0.0
-fund_hldb["total_shares"] = 0.0
-fund_hldb["asset"] = 0.0
-fund_hldb["total_invest"] = 0.0
-
-for i in range(len(fund_hldb)):
-    nav = fund_hldb.loc[i, "net_value"]
-    invest_today = fund_hldb.loc[i, "daily_invest"]
-
-    # 买入 / 卖出
-    shares = invest_today / nav
-
-    total_shares += shares
-    total_invest += invest_today
-
-    fund_hldb.loc[i, "shares"] = round(shares, 2)
-    fund_hldb.loc[i, "total_shares"] = round(total_shares, 2)
-    fund_hldb.loc[i, "asset"] = round(total_shares * nav, 2)
-    fund_hldb.loc[i, "total_invest"] = round(total_invest, 2)
-
-fund_hldb["profit"] = round(fund_hldb["asset"] - fund_hldb["total_invest"], 2)
-fund_hldb["Return Rate (%)"] = round(fund_hldb["profit"] / fund_hldb["total_invest"] * 100, 2)
-fund_hldb["Fund"] = "南方红利低波50"
-
-fund_hldb = fund_hldb[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
-
 ## 3.易方达上证科创50ETF联接C（011609）
 fund_kc = ak.fund_open_fund_info_em(
     symbol="011609",
@@ -543,7 +471,7 @@ fund_cpo["Fund"] = "华泰成长混合"
 fund_cpo = fund_cpo[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
 
 
-funds = pd.concat([fund_hl, fund_hldb, fund_kc, fund_dw, fund_ld, fund_yj, fund_js, fund_cpo], ignore_index = True)
+funds = pd.concat([fund_hl, fund_kc, fund_dw, fund_ld, fund_yj, fund_js, fund_cpo], ignore_index = True)
 funds["daily profit"] = funds.groupby("Fund")["profit"].diff()
 funds = funds[funds["total_shares"] > 0]
 date = funds["date"].max()
@@ -622,7 +550,7 @@ fig_pie.update_traces(
 fig_pie.update_traces(hole=0.3)
 
 
-profit_db = funds_share["daily profit"][funds_share["Fund"] == "南方红利低波50"]
+profit_hl = funds_share["daily profit"][funds_share["Fund"] == "易方达中证红利"]
 profit_kc = funds_share["daily profit"][funds_share["Fund"] == "易方达科创50"]
 profit_dw = funds_share["daily profit"][funds_share["Fund"] == "华夏中证电网设备"]
 profit_ld = funds_share["daily profit"][funds_share["Fund"] == "华夏中证绿色电力"]
