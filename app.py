@@ -172,6 +172,7 @@ plans_dw = [
     {"date": "2026-03-20", "amount": 40.10},
     {"date": "2026-04-02", "amount": (70.00 * (1 - fee_rate_dw)) - 56.97},
     {"date": "2026-04-07", "amount": 20.00 * (1 - fee_rate_dw)},
+    {"date": "2026-04-13", "amount": 50.00 * (1 - fee_rate_dw)}
 ]
 
 plans_dw_df = pd.DataFrame(plans_dw)
