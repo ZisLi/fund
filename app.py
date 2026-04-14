@@ -399,7 +399,7 @@ fund_cpo["Fund"] = "华泰成长混合"
 fund_cpo = fund_cpo[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
 
 
-funds = pd.concat([fund_hl, fund_kc, fund_dw, fund_ld, fund_yj, fund_js, fund_cpo], ignore_index = True)
+funds = pd.concat([fund_kc, fund_dw, fund_ld, fund_yj, fund_js, fund_cpo], ignore_index = True)
 funds["daily profit"] = funds.groupby("Fund")["profit"].diff()
 funds = funds[funds["total_shares"] > 0]
 date = funds["date"].max()
