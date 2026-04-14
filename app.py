@@ -8,80 +8,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 # 持仓基金
-## 1. 易方达中证红利ETF联接A（009052）
-fund_hl = ak.fund_open_fund_info_em(
-    symbol="009051",
-    indicator="单位净值走势"
-)
-
-fund_hl = fund_hl.rename(
-    columns={
-        "净值日期": "date", 
-        "单位净值": "net_value", 
-        "日增长率": "growth_rate(%)"
-        }
-        )
-
-fund_hl["date"] = pd.to_datetime(fund_hl["date"])
-fund_hl = fund_hl[fund_hl["date"] >= "2026-03-06"]
-fund_hl.reset_index(drop = True, inplace = True)
-
-plans_hl = [
-    {"date": "2026-03-06", "amount": 99.40},
-    {"date": "2026-03-10", "amount": 300.00},
-    {"date": "2026-03-16", "amount": 99.16},
-    {"date": "2026-03-17", "amount": 49.04},
-    {"date": "2026-03-18", "amount": 49.31},
-    {"date": "2026-03-19", "amount": 96.81},
-    {"date": "2026-03-20", "amount": 100.00-32.41},
-    {"date": "2026-03-23", "amount": 20.00},
-    {"date": "2026-04-03", "amount": 110.00-64.07},
-    {"date": "2026-04-09", "amount": 39.74},
-    {"date": "2026-04-14", "amount": -300.00}
-]
-
-plans_hl_df = pd.DataFrame(plans_hl)
-plans_hl_df["date"] = pd.to_datetime(plans_hl_df["date"])
-
-fund_hl["daily_invest"] = 0.0
-
-fund_hl = fund_hl.merge(plans_hl_df, on="date", how="left")
-fund_hl["amount"] = fund_hl["amount"].fillna(0)
-
-fund_hl.loc[fund_hl["date"] >= pd.Timestamp("2026-03-24"), "daily_invest"] = 11.00
-fund_hl.loc[fund_hl["date"] >= pd.Timestamp("2026-03-31"), "daily_invest"] = 0.00
-
-fund_hl["daily_invest"] = fund_hl["amount"] + fund_hl["daily_invest"]
-
-total_shares = 0
-total_invest = 0
-
-fund_hl["shares"] = 0.0
-fund_hl["total_shares"] = 0.0
-fund_hl["asset"] = 0.0
-fund_hl["total_invest"] = 0.0
-
-for i in range(len(fund_hl)):
-    nav = fund_hl.loc[i, "net_value"]
-    invest_today = fund_hl.loc[i, "daily_invest"]
-
-    # 买入 / 卖出
-    shares = invest_today / nav
-
-    total_shares += shares
-    total_invest += invest_today
-
-    fund_hl.loc[i, "shares"] = round(shares, 2)
-    fund_hl.loc[i, "total_shares"] = round(total_shares, 2)
-    fund_hl.loc[i, "asset"] = round(total_shares * nav, 2)
-    fund_hl.loc[i, "total_invest"] = round(total_invest, 2)
-
-fund_hl["profit"] = round(fund_hl["asset"] - fund_hl["total_invest"], 2)
-fund_hl["Return Rate (%)"] = round(fund_hl["profit"] / fund_hl["total_invest"] * 100, 2)
-fund_hl["Fund"] = "易方达中证红利"
-
-fund_hl = fund_hl[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
-
 ## 3.易方达上证科创50ETF联接C（011609）
 fund_kc = ak.fund_open_fund_info_em(
     symbol="011609",
@@ -552,7 +478,6 @@ fig_pie.update_traces(
 fig_pie.update_traces(hole=0.3)
 
 
-profit_hl = funds_share["daily profit"][funds_share["Fund"] == "易方达中证红利"]
 profit_kc = funds_share["daily profit"][funds_share["Fund"] == "易方达科创50"]
 profit_dw = funds_share["daily profit"][funds_share["Fund"] == "华夏中证电网设备"]
 profit_ld = funds_share["daily profit"][funds_share["Fund"] == "华夏中证绿色电力"]
