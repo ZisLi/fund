@@ -36,7 +36,8 @@ plans_hl = [
     {"date": "2026-03-20", "amount": 100.00-32.41},
     {"date": "2026-03-23", "amount": 20.00},
     {"date": "2026-04-03", "amount": 110.00-64.07},
-    {"date": "2026-04-09", "amount": 39.74}
+    {"date": "2026-04-09", "amount": 39.74},
+    {"date": "2026-04-14", "amount": 300}
 ]
 
 plans_hl_df = pd.DataFrame(plans_hl)
