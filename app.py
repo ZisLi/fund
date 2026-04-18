@@ -8,7 +8,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 # 持仓基金
-## 3.易方达上证科创50ETF联接C（011609）
+## 1.易方达上证科创50ETF联接C（011609）
 fund_kc = ak.fund_open_fund_info_em(
     symbol="011609",
     indicator="单位净值走势"
@@ -74,7 +74,7 @@ fund_kc["Fund"] = "易方达科创50"
 
 fund_kc = fund_kc[["Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
 
-## 4.华夏中证电网设备主题ETF联接A（025856）
+## 2.华夏中证电网设备主题ETF联接A（025856）
 fund_dw = ak.fund_open_fund_info_em(
     symbol="025856",
     indicator="单位净值走势"
@@ -144,7 +144,7 @@ fund_dw["Fund"] = "华夏中证电网设备"
 fund_dw = fund_dw[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
 
 
-## 5.华夏中证绿色电力ETF联接A（018734）
+## 3.华夏中证绿色电力ETF联接A（018734）
 fund_ld = ak.fund_open_fund_info_em(
     symbol="018734",
     indicator="单位净值走势"
@@ -210,7 +210,7 @@ fund_ld["Fund"] = "华夏中证绿色电力"
 
 fund_ld = fund_ld[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
 
-## 6.广发远见智选混合C（016874）
+## 4.广发远见智选混合C（016874）
 fund_yj = ak.fund_open_fund_info_em(
     symbol="016874",
     indicator="单位净值走势"
@@ -276,7 +276,7 @@ fund_yj["Fund"] = "广发远见混合"
 fund_yj = fund_yj[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
 
 
-## 7.南方有色金属ETF联接C（004433）
+## 5.南方有色金属ETF联接C（004433）
 fund_js = ak.fund_open_fund_info_em(
     symbol="004433",
     indicator="单位净值走势"
@@ -337,7 +337,7 @@ fund_js["Fund"] = "南方有色金属"
 
 fund_js = fund_js[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
 
-## 8.华泰柏瑞质量成长混合C（011452）
+## 6.华泰柏瑞质量成长混合C（011452）
 fund_cpo = ak.fund_open_fund_info_em(
     symbol="011452",
     indicator="单位净值走势"
@@ -399,8 +399,71 @@ fund_cpo["Fund"] = "华泰成长混合"
 
 fund_cpo = fund_cpo[[ "Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
 
+## 7.华夏恒生互联网C（011609）
+fund_hs = ak.fund_open_fund_info_em(
+    symbol="023764",
+    indicator="单位净值走势"
+)
+fund_hs = fund_hs.rename(
+    columns={
+        "净值日期": "date", 
+        "单位净值": "net_value", 
+        "日增长率": "growth_rate(%)"
+        }
+        )
 
-funds = pd.concat([fund_kc, fund_dw, fund_ld, fund_yj, fund_js, fund_cpo], ignore_index = True)
+fund_hs["date"] = pd.to_datetime(fund_hs["date"])
+fund_hs = fund_hs[fund_hs["date"] >= "2026-04-17"]
+fund_hs.reset_index(drop = True, inplace = True)
+
+plans_hs = [
+    {"date": "2026-04-17", "amount": 200.00}
+]
+
+plans_hs_df = pd.DataFrame(plans_hs)
+plans_hs_df["date"] = pd.to_datetime(plans_hs_df["date"])
+
+fund_hs["daily_invest"] = 0.0
+
+fund_hs = fund_hs.merge(plans_hs_df, on="date", how="left")
+fund_hs["amount"] = fund_hs["amount"].fillna(0)
+
+fee_rate_hs = 0
+# fund_kc.loc[fund_kc["date"] >= pd.to_datetime("2026-03-24"), "daily_invest"] = 0 * (1 - fee_rate_kc)
+
+fund_hs["daily_invest"] = fund_hs["amount"] + fund_hs["daily_invest"]
+
+total_shares = 0
+total_invest = 0
+
+fund_hs["shares"] = 0.0
+fund_hs["total_shares"] = 0.0
+fund_hs["asset"] = 0.0
+fund_hs["total_invest"] = 0.0
+
+for i in range(len(fund_hs)):
+    nav = fund_hs.loc[i, "net_value"]
+    invest_today = fund_hs.loc[i, "daily_invest"]
+
+    # 买入 / 卖出
+    shares = invest_today / nav
+
+    total_shares += shares
+    total_invest += invest_today
+
+    fund_hs.loc[i, "shares"] = round(shares, 2)
+    fund_hs.loc[i, "total_shares"] = round(total_shares, 2)
+    fund_hs.loc[i, "asset"] = round(total_shares * nav, 2)
+    fund_hs.loc[i, "total_invest"] = round(total_invest, 2)
+
+fund_hs["profit"] = round(fund_hs["asset"] - fund_hs["total_invest"], 2)
+fund_hs["Return Rate (%)"] = round(fund_hs["profit"] / fund_hs["total_invest"] * 100, 2)
+fund_hs["Fund"] = "华夏恒科互联网"
+
+fund_hs = fund_hs[["Fund", "date", "net_value", "growth_rate(%)", "daily_invest", "total_shares", "asset", "total_invest", "profit", "Return Rate (%)"]]
+
+
+funds = pd.concat([fund_kc, fund_dw, fund_ld, fund_yj, fund_js, fund_cpo, fund_hs], ignore_index = True)
 funds["daily profit"] = funds.groupby("Fund")["profit"].diff()
 funds = funds[funds["total_shares"] > 0]
 date = funds["date"].max()
@@ -485,6 +548,7 @@ profit_ld = funds_share["daily profit"][funds_share["Fund"] == "华夏中证绿�
 profit_yj = funds_share["daily profit"][funds_share["Fund"] == "广发远见混合"]
 profit_js = funds_share["daily profit"][funds_share["Fund"] == "南方有色金属"]
 profit_cpo = funds_share["daily profit"][funds_share["Fund"] == "华泰成长混合"]
+profit_hs = funds_share["daily profit"][funds_share["Fund"] == "华夏恒科互联网"]
 
 fig_profit = px.bar(
     funds_share,
